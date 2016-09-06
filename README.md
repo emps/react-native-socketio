@@ -11,6 +11,9 @@ This project now supports both iOS and Android using the same JS calls.
  * [Socket.IO-Client-Swift](https://github.com/socketio/socket.io-client-swift).
  * [Socket.IO-Client-Java](https://github.com/socketio/socket.io-client-java).
 
+ ### last updated
+ **2016-09-07** *Swift*  https://github.com/socketio/socket.io-client-swift/tree/a412eef2688cb81cb727a536e51a7b559e1141b5
+ 
 ### Example
 Kirkness added a super simple example app to /examples, copy and paste to your index.ios.js.
 ``` js

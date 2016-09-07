@@ -33,7 +33,7 @@ class SocketIO: NSObject {
     // Connect to socket with config
     self.socket = SocketIOClient(
       socketURL: self.connectionSocket,
-      options:config as? [String : AnyObject]
+      config:config as? [String : AnyObject]
     )
 
     // Initialize onAny events

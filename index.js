@@ -1,6 +1,6 @@
 'use strict';
 
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { DeviceEventEmitter, NativeModules, Platform } from 'react-native';
 let SocketIO = NativeModules.SocketIO;
 
 class Socket {
@@ -12,12 +12,11 @@ class Socket {
       config = {};
 
     this.sockets = SocketIO;
-    this.eventEmitter = new NativeEventEmitter(SocketIO);
     this.isConnected = false;
     this.handlers = {};
     this.onAnyHandler = null;
 
-    this.eventEmitter.addListener(
+    this.deviceEventSubscription = DeviceEventEmitter.addListener(
       'socketEvent', this._handleEvent.bind(this)
     );
 

@@ -9,18 +9,17 @@
 import Foundation
 
 @objc(SocketIO)
-class SocketIO: NSObject {
+class SocketIO: RCTEventEmitter {
 
   var socket: SocketIOClient!
   var connectionSocket: NSURL!
-  var bridge: RCTBridge!
 
   /**
-  * Construct and expose RCTBridge to module
+  * Tell RN what events we are dispatching
   */
 
-  @objc func initWithBridge(_bridge: RCTBridge) {
-    self.bridge = _bridge
+  override func supportedEvents() -> [String]! {
+    return ["socketEvent"]
   }
 
   /**
@@ -64,8 +63,7 @@ class SocketIO: NSObject {
   @objc func addHandlers(handlers: NSDictionary) -> Void {
     for handler in handlers {
       self.socket.on(handler.key as! String) { data, ack in
-        self.bridge.eventDispatcher().sendDeviceEventWithName(
-          "socketEvent", body: handler.key as! String)
+        self.sendEventWithName("socketEvent", body: handler.key as! String)
       }
     }
   }
@@ -84,10 +82,10 @@ class SocketIO: NSObject {
 
   private func onAnyEventHandler (sock: SocketAnyEvent) -> Void {
     if let items = sock.items {
-      self.bridge.eventDispatcher().sendDeviceEventWithName("socketEvent",
+      self.sendEventWithName("socketEvent",
         body: ["name": sock.event, "items": items])
     } else {
-      self.bridge.eventDispatcher().sendDeviceEventWithName("socketEvent",
+      self.sendEventWithName("socketEvent",
         body: ["name": sock.event])
     }
   }

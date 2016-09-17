@@ -5,9 +5,6 @@
       location = "group:RNSwiftSocketIO/SocketIOClient"
       name = "SocketIOClient">
       <FileRef
-         location = "group:NSCharacterSet.swift">
-      </FileRef>
-      <FileRef
          location = "group:SocketAckEmitter.swift">
       </FileRef>
       <FileRef
@@ -63,12 +60,6 @@
       </FileRef>
       <FileRef
          location = "group:SocketTypes.swift">
-      </FileRef>
-      <FileRef
-         location = "group:String.swift">
-      </FileRef>
-      <FileRef
-         location = "group:SwiftRegex.swift">
       </FileRef>
       <FileRef
          location = "group:WebSocket.swift">

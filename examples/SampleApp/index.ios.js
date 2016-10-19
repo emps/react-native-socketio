@@ -9,20 +9,22 @@
 
 'use strict';
 
-var React = require('react-native');
-var SocketIO = require('react-native-swift-socketio');
-var {
+import React, { Component } from 'react';
+import {
   AppRegistry,
   StyleSheet,
   Text,
   View,
-  Component,
   TouchableWithoutFeedback
-} = React;
+} from 'react-native';
 
-class RNSwiftSocketIOTest extends Component{
+var SocketIO = require('react-native-socketio');
 
-  constructor () {
+class SampleApp extends Component{
+
+  constructor (props) {
+    super(props);
+
     this.socket = new SocketIO('localhost:3000', {});
     this.state = { status: 'Not connected' };
   }
@@ -84,4 +86,4 @@ var styles = StyleSheet.create({
   }
 });
 
-AppRegistry.registerComponent('RNSwiftSocketIOTest', () => RNSwiftSocketIOTest);
+AppRegistry.registerComponent('SampleApp', () => SampleApp);

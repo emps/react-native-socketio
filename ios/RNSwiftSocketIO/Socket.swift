@@ -98,6 +98,11 @@ class SocketIO: RCTEventEmitter {
     self.socket.connect()
   }
   
+  // Disconnect to socket
+  @objc func disconnect() -> Void {
+    self.socket.disconnect()
+  }
+  
   // Reconnect to socket
   @objc func reconnect() -> Void {
     self.socket.reconnect()

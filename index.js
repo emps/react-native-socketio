@@ -1,6 +1,7 @@
 'use strict';
 
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+
 let SocketIO = NativeModules.SocketIO;
 let SocketIOEventManager = new NativeEventEmitter(NativeModules.SocketIO);
 
@@ -31,6 +32,20 @@ class Socket {
         this.isConnected = false;
       }
     };
+
+
+    if (Platform.OS === 'android') {
+      if(config.nsp) {
+        host = host + config.nsp;
+        delete config['nsp'];
+      }
+      if(config.connectParams) {
+        var str = Object.keys(config.connectParams).map(function(key){
+          return encodeURIComponent(key) + '=' + encodeURIComponent(config.connectParams[key]);
+        }).join('&');
+        config['query'] = str;
+      }
+    }
 
     // Set initial configuration
     this.sockets.initialize(host, config);

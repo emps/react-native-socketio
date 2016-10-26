@@ -72,8 +72,7 @@ public class SocketIoReadableNativeMap extends ReadableNativeMap {
         while (iterator.hasNextKey()) {
             String key = iterator.nextKey().toLowerCase();
             switch (key) {
-                case "force new connection":
-                case "forcenew":
+                case "forceNew":
                     opts.forceNew = options.getBoolean(key);
                     break;
                 case "multiplex":
@@ -85,6 +84,8 @@ public class SocketIoReadableNativeMap extends ReadableNativeMap {
                 case "connect_timeout":
                     opts.timeout = options.getInt(key);
                     break;
+                case "query":
+                    opts.query = options.getString(key);
                 default:
                     Log.e(TAG, "Could not convert object with key: " + key + ".");
             }

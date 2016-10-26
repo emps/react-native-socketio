@@ -12,6 +12,7 @@ import Foundation
 class SocketIO: RCTEventEmitter {
   var socket: SocketIOClient!
   var connectionSocket: URL!
+  var socketConfig: SocketIOClientConfiguration!
   
   // Event list for Handling RCTEvent
   override func supportedEvents() -> [String]! {
@@ -25,9 +26,55 @@ class SocketIO: RCTEventEmitter {
   @objc func initialize(_ connection: String, config: [String:AnyObject]) -> Void {
     connectionSocket = URL(string: connection);
     
+    socketConfig = [.log(false)];
+    
+    for ( key, value) in config {
+      var option: Any?;
+      
+      switch key {
+        case "connectParams" :
+          option = SocketIOClientOption.connectParams( value as! [String : Any] );
+        case "doubleEncodeUTF8" :
+          option = SocketIOClientOption.doubleEncodeUTF8( value as! Bool );
+        case "extraHeaders" :
+          option = SocketIOClientOption.extraHeaders( value as! [String: String] );
+        case "forcePolling" :
+          option = SocketIOClientOption.forcePolling( value as! Bool );
+        case "forceNew" :
+          option = SocketIOClientOption.forceNew( value as! Bool );
+        case "forceWebsockets" :
+          option = SocketIOClientOption.forceWebsockets( value as! Bool );
+        case "log" :
+          option = SocketIOClientOption.log( value as! Bool );
+        case "nsp" :
+          option = SocketIOClientOption.nsp( value as! String );
+        case "path" :
+          option = SocketIOClientOption.path( value as! String );
+        case "reconnects" :
+          option = SocketIOClientOption.reconnects( value as! Bool );
+        case "reconnectAttempts" :
+          option = SocketIOClientOption.reconnectAttempts( value as! Int );
+        case "reconnectWait" :
+          option = SocketIOClientOption.reconnectWait( value as! Int );
+        case "secure" :
+          option = SocketIOClientOption.secure( value as! Bool );
+        case "selfSigned" :
+          option = SocketIOClientOption.selfSigned( value as! Bool );
+        case "voipEnabled" :
+          option = SocketIOClientOption.voipEnabled( value as! Bool );
+        default:
+          option = nil;
+      }
+      
+      if( option != nil ){
+        socketConfig.insert(option as! SocketIOClientOption );
+      }
+    }
+    
     // Connect to socket with config
     self.socket = SocketIOClient(
-      socketURL: self.connectionSocket!
+      socketURL: self.connectionSocket!,
+      config:socketConfig
     )
     
     // Initialize onAny events

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.facebook.jni.HybridData;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.ReadableNativeArray;
 
 import java.util.HashMap;
 
@@ -51,7 +52,7 @@ public class SocketIoReadableNativeMap extends ReadableNativeMap {
                     hashMap.put(key, toHashMap(map.getMap(key)));
                     break;
                 case Array:
-                    hashMap.put(key, ((SocketIoReadableNativeArray) map.getArray(key)).toArrayList());
+                    hashMap.put(key, ((ReadableNativeArray) map.getArray(key)).toArrayList());
                     break;
                 default:
                     throw new IllegalArgumentException("Could not convert object with key: " + key + ".");

@@ -73,8 +73,8 @@ public class SocketIoJSONUtil {
                 } else if (object instanceof JSONArray) {
                     items.putArray(key, jsonArrayToWritableArray((JSONArray) object));
                 } else {
-                    Log.e(TAG, "Cannot identify JSONObject. Inserting Null object for key "
-                            + key + " unidentfied object = " + object);
+                    //Log.e(TAG, "Cannot identify JSONObject. Inserting Null object for key "
+                    //        + key + " unidentfied object = " + object);
                     items.putNull(key);
                 }
             } catch (JSONException error) {
@@ -108,8 +108,8 @@ public class SocketIoJSONUtil {
                 } else if (object instanceof JSONArray) {
                     items.pushArray(jsonArrayToWritableArray((JSONArray) object));
                 } else {
-                    Log.e(TAG, "Cannot identify JSONObject. Inserting Null object. " +
-                            "Original unidentfied object = " + object);
+                    //Log.e(TAG, "Cannot identify JSONObject. Inserting Null object. " +
+                    //        "Original unidentfied object = " + object);
                     items.pushNull();
                 }
             } catch (JSONException error) {

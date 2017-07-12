@@ -26,7 +26,7 @@ class SocketIO: RCTEventEmitter {
   @objc func initialize(_ connection: String, config: [String:AnyObject]) -> Void {
     connectionSocket = URL(string: connection);
     
-    socketConfig = [.log(false)];
+    socketConfig = [.log(false), .compress];
     
     for ( key, value) in config {
       var option: Any?;
@@ -69,6 +69,11 @@ class SocketIO: RCTEventEmitter {
       if( option != nil ){
         socketConfig.insert(option as! SocketIOClientOption );
       }
+    }
+    if (self.socket != nil) {
+      self.socket.disconnect()
+      self.socket.removeAllHandlers()
+      self.socket = nil
     }
     
     // Connect to socket with config

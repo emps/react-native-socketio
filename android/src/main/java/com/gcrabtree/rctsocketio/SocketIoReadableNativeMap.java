@@ -7,9 +7,13 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.ReadableNativeArray;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import io.socket.client.IO;
+import io.socket.engineio.client.transports.Polling;
 
 /**
  * Created by Greg Crabtree on 5/17/16.
@@ -67,11 +71,17 @@ public class SocketIoReadableNativeMap extends ReadableNativeMap {
      * @return IO.Options object that has been populated. Currently incomplete. PRs welcome.
      */
     public static IO.Options mapToOptions(ReadableNativeMap options) {
-        ReadableMapKeySetIterator iterator = options.keySetIterator();
+
+        Log.e("SOCKETASDF", "options");
+
+        Iterator iterator = options.toHashMap().entrySet().iterator();
         IO.Options opts = new IO.Options();
 
-        while (iterator.hasNextKey()) {
-            String key = iterator.nextKey().toLowerCase();
+
+        while (iterator.hasNext()) {
+            Map.Entry pair = (Map.Entry) iterator.next();
+            String key = pair.getKey().toString();
+            Log.e("SOCKETASDF", "get Key" + key);
             switch (key) {
                 case "forceNew":
                     opts.forceNew = options.getBoolean(key);
@@ -85,8 +95,20 @@ public class SocketIoReadableNativeMap extends ReadableNativeMap {
                 case "connect_timeout":
                     opts.timeout = options.getInt(key);
                     break;
+                case "reconnectionDelay":
+                    Log.e("SOCKETASDF", "reconnectionDelay");
+                    opts.reconnectionDelay = options.getInt(key);
+                    break;
+                case "reconnectionDelayMax":
+                    Log.e("SOCKETASDF", "reconnectionDelayMax");
+                    opts.reconnectionDelayMax = options.getInt(key);
+                    break;
+                case "forcePolling":
+                    opts.transports = new String[] {Polling.NAME};
+                    break;
                 case "query":
                     opts.query = options.getString(key);
+                    break;
                 default:
                     Log.e(TAG, "Could not convert object with key: " + key + ".");
             }

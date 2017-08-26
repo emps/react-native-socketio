@@ -71,9 +71,6 @@ public class SocketIoReadableNativeMap extends ReadableNativeMap {
      * @return IO.Options object that has been populated. Currently incomplete. PRs welcome.
      */
     public static IO.Options mapToOptions(ReadableNativeMap options) {
-
-        Log.e("SOCKETASDF", "options");
-
         Iterator iterator = options.toHashMap().entrySet().iterator();
         IO.Options opts = new IO.Options();
 
@@ -81,7 +78,6 @@ public class SocketIoReadableNativeMap extends ReadableNativeMap {
         while (iterator.hasNext()) {
             Map.Entry pair = (Map.Entry) iterator.next();
             String key = pair.getKey().toString();
-            Log.e("SOCKETASDF", "get Key" + key);
             switch (key) {
                 case "forceNew":
                     opts.forceNew = options.getBoolean(key);
@@ -96,11 +92,9 @@ public class SocketIoReadableNativeMap extends ReadableNativeMap {
                     opts.timeout = options.getInt(key);
                     break;
                 case "reconnectionDelay":
-                    Log.e("SOCKETASDF", "reconnectionDelay");
                     opts.reconnectionDelay = options.getInt(key);
                     break;
                 case "reconnectionDelayMax":
-                    Log.e("SOCKETASDF", "reconnectionDelayMax");
                     opts.reconnectionDelayMax = options.getInt(key);
                     break;
                 case "forcePolling":

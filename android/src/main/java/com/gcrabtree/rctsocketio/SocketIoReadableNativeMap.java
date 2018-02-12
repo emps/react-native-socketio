@@ -71,6 +71,7 @@ public class SocketIoReadableNativeMap extends ReadableNativeMap {
      * @return IO.Options object that has been populated. Currently incomplete. PRs welcome.
      */
     public static IO.Options mapToOptions(ReadableNativeMap options) {
+
         Iterator iterator = options.toHashMap().entrySet().iterator();
         IO.Options opts = new IO.Options();
 
@@ -96,9 +97,6 @@ public class SocketIoReadableNativeMap extends ReadableNativeMap {
                     break;
                 case "reconnectionDelayMax":
                     opts.reconnectionDelayMax = options.getInt(key);
-                    break;
-                case "forcePolling":
-                    opts.transports = new String[] {Polling.NAME};
                     break;
                 case "query":
                     opts.query = options.getString(key);

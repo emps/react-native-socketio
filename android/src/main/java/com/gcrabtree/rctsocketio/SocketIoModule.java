@@ -15,15 +15,19 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Callback;
 
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
+import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import okhttp3.OkHttpClient;
 
 public class SocketIoModule extends ReactContextBaseJavaModule {
     private static final String TAG = "RCTSocketIoModule";
@@ -31,6 +35,8 @@ public class SocketIoModule extends ReactContextBaseJavaModule {
     private Socket mSocket;
     private ReactApplicationContext mReactContext;
 
+    private static OkHttpClient okHttpClient;
+    
     public SocketIoModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.mReactContext = reactContext;
@@ -48,10 +54,25 @@ public class SocketIoModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void initialize(String connection, ReadableMap options) {
+        IO.Options ioOptions = SocketIoReadableNativeMap.mapToOptions((ReadableNativeMap) options);
+        if (okHttpClient == null) {
+            okHttpClient = new OkHttpClient.Builder()
+                    .connectTimeout(0, TimeUnit.MILLISECONDS)
+                    .readTimeout(0, TimeUnit.MILLISECONDS)
+                    .writeTimeout(0, TimeUnit.MILLISECONDS)
+                    .build();
+        }
+
+        ioOptions.callFactory = okHttpClient;
+        ioOptions.webSocketFactory = okHttpClient;
+
+        IO.setDefaultOkHttpWebSocketFactory(okHttpClient);
+        IO.setDefaultOkHttpCallFactory(okHttpClient);
+
         try {
             this.mSocket = IO.socket(
                     connection,
-                    SocketIoReadableNativeMap.mapToOptions((ReadableNativeMap) options)
+                    ioOptions
             );
         }
         catch(URISyntaxException exception) {
@@ -63,12 +84,18 @@ public class SocketIoModule extends ReactContextBaseJavaModule {
      * Emit event to server
      * @param event The name of the event.
      * @param items The data to pass through the SocketIo engine to the server endpoint.
+     * @param Ack callback
      */
     @ReactMethod
-    public void emit(String event, ReadableMap items) {
-        HashMap<String, Object> map = ((ReadableNativeMap) items).toHashMap();
+    public void emit(String event, ReadableMap items, final Callback ack) {
+        HashMap<String, Object> map = SocketIoReadableNativeMap.toHashMap((ReadableNativeMap) items);
         if (mSocket != null) {
-            mSocket.emit(event, new JSONObject(map));
+            mSocket.emit(event, new JSONObject(map), new Ack() {
+                @Override
+                public void call(Object... args) {
+                    ack.invoke(SocketIoJSONUtil.objectsFromJSON(args));
+                }
+            });
         }
         else {
             Log.e(TAG, "Cannot execute emit. mSocket is null. Initialize socket first!!!");

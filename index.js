@@ -1,9 +1,7 @@
 'use strict';
 
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
-
+import { DeviceEventEmitter, NativeEventEmitter,NativeModules, Platform } from 'react-native';
 let SocketIO = NativeModules.SocketIO;
-let SocketIOEventManager = new NativeEventEmitter(NativeModules.SocketIO);
 
 class Socket {
   constructor (host, config) {
@@ -17,8 +15,15 @@ class Socket {
     this.isConnected = false;
     this.handlers = {};
     this.onAnyHandler = null;
+    if(Platform.OS == 'ios'){
+      const RNSocketIOManagerEmitter = new NativeEventEmitter(SocketIO);
+      const subscription = RNSocketIOManagerEmitter.addListener(
+        'socketEvent',
+        this._handleEvent.bind(this)
+      );
 
-    this.deviceEventSubscription = SocketIOEventManager.addListener(
+    }
+    this.deviceEventSubscription = DeviceEventEmitter.addListener(
       'socketEvent', this._handleEvent.bind(this)
     );
 
@@ -26,26 +31,13 @@ class Socket {
     this.defaultHandlers = {
       connect: () => {
         this.isConnected = true;
+
       },
 
       disconnect: () => {
         this.isConnected = false;
       }
     };
-
-
-    if (Platform.OS === 'android') {
-      if(config.nsp) {
-        host = host + config.nsp;
-        delete config['nsp'];
-      }
-      if(config.connectParams) {
-        var str = Object.keys(config.connectParams).map(function(key){
-          return encodeURIComponent(key) + '=' + encodeURIComponent(config.connectParams[key]);
-        }).join('&');
-        config['query'] = str;
-      }
-    }
 
     // Set initial configuration
     this.sockets.initialize(host, config);
@@ -79,8 +71,8 @@ class Socket {
     this.onAnyHandler = handler;
   }
 
-  emit (event, data) {
-    this.sockets.emit(event, data);
+  emit (event, data, ack = () => true) {
+    this.sockets.emit(event, data, ack);
   }
 
   joinNamespace (namespace) {

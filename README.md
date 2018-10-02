@@ -149,7 +149,7 @@ $ npm install react-native-socketio
     }
     ```
 
-3. Register module (in MainActivity.java)
+3. Register module (in MainApplication.java)
 
     ```
     import com.gcrabtree.rctsocketio.SocketIoPackage;  // <--- import
@@ -160,9 +160,7 @@ $ npm install react-native-socketio
       @Override
       protected List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
-          new MainReactPackage(),
-          new VectorIconsPackage(),
-          new OrientationPackage(this),
+          ...
           new SocketIoPackage()   // <--- Add here!
       );
     }

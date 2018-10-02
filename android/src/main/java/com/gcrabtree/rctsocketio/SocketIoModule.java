@@ -29,6 +29,16 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import okhttp3.OkHttpClient;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
 public class SocketIoModule extends ReactContextBaseJavaModule {
     private static final String TAG = "RCTSocketIoModule";
 
@@ -54,20 +64,58 @@ public class SocketIoModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void initialize(String connection, ReadableMap options) {
+
         IO.Options ioOptions = SocketIoReadableNativeMap.mapToOptions((ReadableNativeMap) options);
         if (okHttpClient == null) {
-            okHttpClient = new OkHttpClient.Builder()
-                    .connectTimeout(0, TimeUnit.MILLISECONDS)
-                    .readTimeout(0, TimeUnit.MILLISECONDS)
-                    .writeTimeout(0, TimeUnit.MILLISECONDS)
-                    .build();
-        }
+            HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            };
+            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
 
+                }
+
+                @Override
+                public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+
+                }
+
+                @Override
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return new java.security.cert.X509Certificate[0];
+                }
+            }};
+            X509TrustManager trustManager = (X509TrustManager) trustAllCerts[0];
+            try {
+                SSLContext sslContext = SSLContext.getInstance("SSL");
+                sslContext.init(null, trustAllCerts, null);
+
+                SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+                okHttpClient = new OkHttpClient.Builder()
+                        .hostnameVerifier(hostnameVerifier)
+                        .sslSocketFactory(sslSocketFactory, trustManager)
+                        .connectTimeout(0, TimeUnit.MILLISECONDS)
+                        .readTimeout(0, TimeUnit.MILLISECONDS)
+                        .writeTimeout(0, TimeUnit.MILLISECONDS)
+                        .build();
+
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                e.printStackTrace();
+            }
+
+
+        }
         ioOptions.callFactory = okHttpClient;
         ioOptions.webSocketFactory = okHttpClient;
 
         IO.setDefaultOkHttpWebSocketFactory(okHttpClient);
         IO.setDefaultOkHttpCallFactory(okHttpClient);
+
 
         try {
             this.mSocket = IO.socket(

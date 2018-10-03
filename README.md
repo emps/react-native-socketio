@@ -112,7 +112,7 @@ Optional:
 
 - Run in your project:
 ```sh
-$ npm install react-native-socketio
+$ npm install --save "git+https://github.com/emps/react-native-socketio.git"
 ```
 
 #### iOS
